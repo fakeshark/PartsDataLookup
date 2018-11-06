@@ -30,6 +30,7 @@ namespace PartsDataLookup
         int nonMatches = 0;
         DataTable table = new DataTable();
         List<string[]> MatchList = new List<string[]>() { };
+        List<string[]> PartsFrom036 = new List<string[]>() { };
         #endregion
 
         public Form1()
@@ -1087,11 +1088,8 @@ namespace PartsDataLookup
 
         private void ExportToExcel_Click(object sender, EventArgs e)
         {
-            // testing something
-            // testing something else
             ExportToExcel(table);
         }
-
 
         private void ExportToExcel(DataTable dt)
         {
@@ -1109,6 +1107,102 @@ namespace PartsDataLookup
             }
 
             MessageBox.Show("Data exported successfully.\n\n" + sfd.FileName.ToString());
+        }
+
+        private void Load036_Click(object sender, EventArgs e)
+        {
+            Load036PartsData();
+        }
+
+        private void Load036PartsData()
+        {
+            OpenFileDialog dataFile036 = new OpenFileDialog();
+            dataFile036.Filter = "Text Files|*.txt|036 Files|*.036";
+            dataFile036.Title = "Select .036 Data File";
+            dataFile036.Multiselect = true;
+            if (dataFile036.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                List<string[]> DataFromFiles = new List<string[]>() { };
+
+                string filesPicked = string.Empty;
+                foreach (string file036 in dataFile036.FileNames)
+                {
+                    string[] tempStringArray = File.ReadAllLines(file036);
+                    DataFromFiles.Add(tempStringArray);
+                }
+
+                List<string[]> all036Parts = Parse036Parts(DataFromFiles);
+
+
+            }
+        }
+
+        private List<string[]> Parse036Parts(List<string[]> dataFromFiles)
+        {
+            List<string> CombinedDataFromFilesList = new List<string>() { };
+            List<string[]> AllPartsFromFiles = new List<string[]>() { };
+            foreach (string[] fileData in dataFromFiles)
+            {
+                for (int i = 0; i < fileData.Length; i++)
+                {
+                    if (fileData[i].Trim() != "")
+                    {
+                        CombinedDataFromFilesList.Add(fileData[i]);
+                    }                    
+                }
+            }
+
+            List<string> TempListToArray = new List<string>() { };
+            bool partFound = false;
+            int CombinedDataIndex = 0;
+            foreach (string datarow in CombinedDataFromFilesList)
+            {
+                CombinedDataIndex++;
+                if (!partFound)
+                {
+                    if (GetLineType(datarow) == "01A")
+                    {
+                        partFound = true;
+                        TempListToArray.Add(datarow);
+                    }
+                }
+                else
+                {
+                    if (CombinedDataIndex != CombinedDataFromFilesList.Count)
+                    {
+                        if (GetLineType(datarow) == "01A")
+                        {
+                            AllPartsFromFiles.Add(TempListToArray.ToArray());
+                            TempListToArray.Clear();
+                            TempListToArray.Add(datarow);
+                        }
+                        else
+                        {
+                            TempListToArray.Add(datarow);
+                        }
+                    }
+                    else
+                    {
+                        TempListToArray.Add(datarow);
+                        AllPartsFromFiles.Add(TempListToArray.ToArray());
+                    }
+                }
+            }
+
+            return AllPartsFromFiles;
+        }
+
+        private string GetLineType(string datarow)
+        {
+            string lineType = string.Empty;
+            if (datarow.Trim() != "")
+            {
+                if (datarow.Length >= 3)
+                {
+                    lineType = datarow.Substring(datarow.Length-3,3);
+                }                
+            }
+            return lineType;
         }
     }
 }
