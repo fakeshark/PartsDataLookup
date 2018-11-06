@@ -37,7 +37,7 @@
             this.btnMatchRecords = new System.Windows.Forms.Button();
             this.lblMatchResults = new System.Windows.Forms.Label();
             this.btnExportToExcell = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lbl036Loaded = new System.Windows.Forms.Label();
             this.btnLoad036 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvExcelList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMatchList)).BeginInit();
@@ -88,7 +88,7 @@
             // lblPartsToMatch
             // 
             this.lblPartsToMatch.AutoSize = true;
-            this.lblPartsToMatch.Location = new System.Drawing.Point(12, 55);
+            this.lblPartsToMatch.Location = new System.Drawing.Point(16, 55);
             this.lblPartsToMatch.Name = "lblPartsToMatch";
             this.lblPartsToMatch.Size = new System.Drawing.Size(16, 13);
             this.lblPartsToMatch.TabIndex = 6;
@@ -97,7 +97,7 @@
             // lblMatchingRecords
             // 
             this.lblMatchingRecords.AutoSize = true;
-            this.lblMatchingRecords.Location = new System.Drawing.Point(12, 130);
+            this.lblMatchingRecords.Location = new System.Drawing.Point(16, 130);
             this.lblMatchingRecords.Name = "lblMatchingRecords";
             this.lblMatchingRecords.Size = new System.Drawing.Size(16, 13);
             this.lblMatchingRecords.TabIndex = 7;
@@ -106,7 +106,7 @@
             // btnMatchRecords
             // 
             this.btnMatchRecords.Enabled = false;
-            this.btnMatchRecords.Location = new System.Drawing.Point(12, 162);
+            this.btnMatchRecords.Location = new System.Drawing.Point(12, 237);
             this.btnMatchRecords.Name = "btnMatchRecords";
             this.btnMatchRecords.Size = new System.Drawing.Size(279, 40);
             this.btnMatchRecords.TabIndex = 8;
@@ -117,7 +117,7 @@
             // lblMatchResults
             // 
             this.lblMatchResults.AutoSize = true;
-            this.lblMatchResults.Location = new System.Drawing.Point(12, 205);
+            this.lblMatchResults.Location = new System.Drawing.Point(16, 280);
             this.lblMatchResults.Name = "lblMatchResults";
             this.lblMatchResults.Size = new System.Drawing.Size(16, 13);
             this.lblMatchResults.TabIndex = 9;
@@ -135,18 +135,18 @@
             this.btnExportToExcell.UseVisualStyleBackColor = true;
             this.btnExportToExcell.Click += new System.EventHandler(this.ExportToExcel_Click);
             // 
-            // label1
+            // lbl036Loaded
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 280);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(16, 13);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "...";
+            this.lbl036Loaded.AutoSize = true;
+            this.lbl036Loaded.Location = new System.Drawing.Point(16, 205);
+            this.lbl036Loaded.Name = "lbl036Loaded";
+            this.lbl036Loaded.Size = new System.Drawing.Size(16, 13);
+            this.lbl036Loaded.TabIndex = 12;
+            this.lbl036Loaded.Text = "...";
             // 
             // btnLoad036
             // 
-            this.btnLoad036.Location = new System.Drawing.Point(12, 237);
+            this.btnLoad036.Location = new System.Drawing.Point(12, 162);
             this.btnLoad036.Name = "btnLoad036";
             this.btnLoad036.Size = new System.Drawing.Size(279, 40);
             this.btnLoad036.TabIndex = 11;
@@ -159,7 +159,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1233, 630);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lbl036Loaded);
             this.Controls.Add(this.btnLoad036);
             this.Controls.Add(this.btnExportToExcell);
             this.Controls.Add(this.lblMatchResults);
@@ -190,7 +190,7 @@
         private System.Windows.Forms.Button btnMatchRecords;
         private System.Windows.Forms.Label lblMatchResults;
         private System.Windows.Forms.Button btnExportToExcell;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lbl036Loaded;
         private System.Windows.Forms.Button btnLoad036;
     }
 }

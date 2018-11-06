@@ -31,6 +31,7 @@ namespace PartsDataLookup
         DataTable table = new DataTable();
         List<string[]> MatchList = new List<string[]>() { };
         List<string[]> PartsFrom036 = new List<string[]>() { };
+        List<string[]> all036Parts = new List<string[]>() { };
         #endregion
 
         public Form1()
@@ -287,6 +288,7 @@ namespace PartsDataLookup
             string line01 = string.Empty;
             string line02 = string.Empty;
             string TEMP1 = string.Empty;
+            bool Check036 = false;
 
             // check every part array in the list of matching part arrays
             // first pass is to check for exact matches
@@ -379,75 +381,119 @@ namespace PartsDataLookup
             }
             else if (matchingParts.Count == 0)
             {
+                Check036 = true;
+               // todo: finish this
                 TEMP1 = "No FLIS Data Found for Part, Cage: " + pn + ", " + cage;
                 nonMatches++;
             }
 
-            // CAGE & PN
             string CAGE = string.Empty;
             string PN = string.Empty;
             string PROVNOM = string.Empty;
             string REMARKS = string.Empty;
-            if (best03Line.Length >= 16)
-            {
-                CAGE = best03Line.Substring(10, 5);
-                PN = best03Line.Substring(15, 31).Trim();
-                if (PN != pn)
-                {
-                    REMARKS = "PN \"" + PN + "\" has been updated, the original PN was: \"" + pn + "\"";
-                }
-            }
-
-            // RNCC, RNVC, & DAC
             string RNCC = string.Empty;
             string RNVC = string.Empty;
             string DAC = string.Empty;
-            if (best03Line.Length >= 5)
-            {
-                RNCC = best03Line.Substring(3, 1);
-                RNVC = best03Line.Substring(4, 1);
-                DAC = best03Line.Substring(5, 1);
-            }
-            // FSC & NIIN
             string FSC = string.Empty;
             string NIIN = string.Empty;
-            if (line01.Length >= 15)
-            {
-                FSC = line01.Substring(2, 4);
-                NIIN = line01.Substring(6, 9);
-            }
-            // NAME, DMIL, INC
             string NAME = string.Empty;
             string DMIL = string.Empty;
             string INC = string.Empty;
-            if (line01.Length >= 48)
-            {
-                NAME = line01.Substring(26, 19).Trim();
-                DMIL = line01.Substring(48, 1).Trim();
-                INC = line01.Substring(21, 5).Trim();
-            }
-            if (TEMP1.Substring(0, 12) == "Part Number:")
-            {
-                TEMP1 += NAME + ")";
-            }
-            if (TEMP1.Substring(0, 11) == "Part, Cage:")
-            {
-                TEMP1 += NAME + ")";
-                exactMatches++;
-            }
-
-            // SL, UI, UI PRICE
             string SL = string.Empty;
             string UI = string.Empty;
             string UIPRICE = string.Empty;
             string QUP = string.Empty;
 
-            if (best05Line.Length >= 24)
+            if (Check036)
             {
-                SL = best05Line.Substring(23, 1);
-                UI = best05Line.Substring(9, 2);
-                UIPRICE = best05Line.Substring(11, 12);
-                QUP = best05Line.Substring(8, 1);
+                string[] pplFrom036 = GetPPLDataFrom036(pn, cage);
+                CAGE = pplFrom036[0];
+                PN = pplFrom036[1];
+                PROVNOM = pplFrom036[2];
+                REMARKS = pplFrom036[3];
+                RNCC = pplFrom036[4];
+                RNVC = pplFrom036[5];
+                DAC = pplFrom036[6];
+                FSC = pplFrom036[7];
+                NIIN = pplFrom036[8];
+                NAME = pplFrom036[9];
+                DMIL = pplFrom036[10];
+                INC = pplFrom036[11];
+                SL = pplFrom036[12];
+                UI = pplFrom036[13];
+                UIPRICE = pplFrom036[14];
+                QUP = pplFrom036[15];
+            }
+            else
+            {
+                // CAGE & PN
+                CAGE = string.Empty;
+                PN = string.Empty;
+                PROVNOM = string.Empty;
+                REMARKS = string.Empty;
+                if (best03Line.Length >= 16)
+                {
+                    CAGE = best03Line.Substring(10, 5);
+                    PN = best03Line.Substring(15, 31).Trim();
+                    if (PN != pn)
+                    {
+                        REMARKS = "PN \"" + PN + "\" has been updated, the original PN was: \"" + pn + "\"";
+                    }
+                }
+                
+                // RNCC, RNVC, & DAC
+                RNCC = string.Empty;
+                RNVC = string.Empty;
+                DAC = string.Empty;
+                if (best03Line.Length >= 5)
+                {
+                    RNCC = best03Line.Substring(3, 1);
+                    RNVC = best03Line.Substring(4, 1);
+                    DAC = best03Line.Substring(5, 1);
+                }
+
+                // FSC & NIIN
+                FSC = string.Empty;
+                NIIN = string.Empty;
+                if (line01.Length >= 15)
+                {
+                    FSC = line01.Substring(2, 4);
+                    NIIN = line01.Substring(6, 9);
+                }
+
+                // NAME, DMIL, INC
+                NAME = string.Empty;
+                DMIL = string.Empty;
+                INC = string.Empty;
+                if (line01.Length >= 48)
+                {
+                    NAME = line01.Substring(26, 19).Trim();
+                    DMIL = line01.Substring(48, 1).Trim();
+                    INC = line01.Substring(21, 5).Trim();
+                }
+                if (TEMP1.Substring(0, 12) == "Part Number:")
+                {
+                    TEMP1 += NAME + ")";
+                }
+                if (TEMP1.Substring(0, 11) == "Part, Cage:")
+                {
+                    TEMP1 += NAME + ")";
+                    exactMatches++;
+                }
+
+                // SL, UI, UI PRICE
+                SL = string.Empty;
+                UI = string.Empty;
+                UIPRICE = string.Empty;
+                QUP = string.Empty;
+
+                if (best05Line.Length >= 24)
+                {
+                    SL = best05Line.Substring(23, 1);
+                    UI = best05Line.Substring(9, 2);
+                    UIPRICE = best05Line.Substring(11, 12);
+                    QUP = best05Line.Substring(8, 1);
+                }
             }
 
             string zeroIndex = "0000" + ouptutIndex.ToString();
@@ -686,6 +732,44 @@ namespace PartsDataLookup
             #endregion
 
             return pplColumns;
+        }
+
+        private string[] GetPPLDataFrom036(string pn, string cage)
+        {
+            string[] pplFrom036 = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
+
+            //0 CAGE = pplFrom036[0];
+            //1 PN = pplFrom036[1];
+            //2 PROVNOM = pplFrom036[2];
+            //3 REMARKS = pplFrom036[3];
+            //4 RNCC = pplFrom036[4];
+            //5 RNVC = pplFrom036[5];
+            //6 DAC = pplFrom036[6];
+            //7 FSC = pplFrom036[7];
+            //8 NIIN = pplFrom036[8];
+            //9 NAME = pplFrom036[9];
+            //10 DMIL = pplFrom036[10];
+            //11 INC = pplFrom036[11];
+            //12 SL = pplFrom036[12];
+            //13 UI = pplFrom036[13];
+            //14 UIPRICE = pplFrom036[14];
+            //15 QUP = pplFrom036[15];
+
+            foreach (string[] part in all036Parts)
+            {
+                for (int i = 0; i < part.Length; i++)
+                {
+                    if (GetLineType(part[i]) == "01A")
+                    {
+                        if (part[i].Substring(18, 26).Trim() == pn)
+                        {
+
+                        }
+                    }
+                }
+            }
+
+            return pplFrom036;
         }
 
         private List<string[]> PickBestPart(List<string[]> matchingParts, string pn, string cage)
@@ -1131,9 +1215,8 @@ namespace PartsDataLookup
                     DataFromFiles.Add(tempStringArray);
                 }
 
-                List<string[]> all036Parts = Parse036Parts(DataFromFiles);
-
-
+                all036Parts = Parse036Parts(DataFromFiles);
+                lbl036Loaded.Text = ".036 Data File(s) loaded, " + all036Parts.Count + " parts identified.";
             }
         }
 
