@@ -738,22 +738,26 @@ namespace PartsDataLookup
         {
             string[] pplFrom036 = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
 
-            //0 CAGE = pplFrom036[0];
-            //1 PN = pplFrom036[1];
-            //2 PROVNOM = pplFrom036[2];
-            //3 REMARKS = pplFrom036[3];
-            //4 RNCC = pplFrom036[4];
-            //5 RNVC = pplFrom036[5];
-            //6 DAC = pplFrom036[6];
-            //7 FSC = pplFrom036[7];
-            //8 NIIN = pplFrom036[8];
-            //9 NAME = pplFrom036[9];
-            //10 DMIL = pplFrom036[10];
-            //11 INC = pplFrom036[11];
-            //12 SL = pplFrom036[12];
+            //0 CAGE = pplFrom036[0];                   01A, 13, 5
+            //1 PN = pplFrom036[1];                        01A, 18, 26
+            //2 PROVNOM = pplFrom036[2];          01K, 23, 53
+            //3 REMARKS = pplFrom036[3];            01H, 32, 44
+            //4 RNCC = pplFrom036[4];                   01A, 50, 1
+            //5 RNVC = pplFrom036[5];                   01A, 51, 1
+            //6 DAC = pplFrom036[6];                     01A, 52, 1
+            //7 FSC = pplFrom036[7];                      01B, 15, 4
+            //8 NIIN = pplFrom036[8];                     01B, 19, 9
+            //9 NAME = pplFrom036[9];                  01A, 55, 19
+            //10 DMIL = pplFrom036[10];               01B, 70, 1
+            //11 INC = pplFrom036[11];                  
+            //12 SL = pplFrom036[12];                    01A, 74, 1
             //13 UI = pplFrom036[13];
             //14 UIPRICE = pplFrom036[14];
             //15 QUP = pplFrom036[15];
+
+
+
+            List<string[]> MatchingParts = new List<string[]>() { };
 
             foreach (string[] part in all036Parts)
             {
@@ -763,7 +767,10 @@ namespace PartsDataLookup
                     {
                         if (part[i].Substring(18, 26).Trim() == pn)
                         {
-
+                            if (!MatchingParts.Contains(part))
+                            {
+                                MatchingParts.Add(part);
+                            }
                         }
                     }
                 }
