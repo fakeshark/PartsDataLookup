@@ -160,6 +160,7 @@ namespace PartsDataLookup
 
             lblPartsToMatch.Text = rowCounter + " rows loaded and " + PartNumsArray.Count() + " usable parts identified.";
             btnLoadFlisFoi.Enabled = true;
+            btnLoad036.Enabled = true;
         }
 
         private void LoadFlisFoi_Click(object sender, EventArgs e)
@@ -797,6 +798,10 @@ namespace PartsDataLookup
                     {
                         pplFrom036[3] = partArray[i].Substring(32, 44).Trim(); //Remarks
                     }                    
+                }
+                if (MatchingParts.Count > 1)
+                {
+                    break;
                 }
             }
             //if (pplFrom036[1] != "")

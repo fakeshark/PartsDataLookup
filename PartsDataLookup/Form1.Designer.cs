@@ -60,7 +60,7 @@
             this.btnLoadFlisFoi.Name = "btnLoadFlisFoi";
             this.btnLoadFlisFoi.Size = new System.Drawing.Size(279, 40);
             this.btnLoadFlisFoi.TabIndex = 1;
-            this.btnLoadFlisFoi.Text = "Update FLIS Packaging Data File";
+            this.btnLoadFlisFoi.Text = "Load FLIS Packaging Data";
             this.btnLoadFlisFoi.UseVisualStyleBackColor = true;
             this.btnLoadFlisFoi.Click += new System.EventHandler(this.LoadFlisFoi_Click);
             // 
@@ -146,6 +146,7 @@
             // 
             // btnLoad036
             // 
+            this.btnLoad036.Enabled = false;
             this.btnLoad036.Location = new System.Drawing.Point(12, 162);
             this.btnLoad036.Name = "btnLoad036";
             this.btnLoad036.Size = new System.Drawing.Size(279, 40);
