@@ -71,7 +71,7 @@
             this.dgvExcelList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvExcelList.Location = new System.Drawing.Point(297, 13);
             this.dgvExcelList.Name = "dgvExcelList";
-            this.dgvExcelList.Size = new System.Drawing.Size(924, 304);
+            this.dgvExcelList.Size = new System.Drawing.Size(924, 322);
             this.dgvExcelList.TabIndex = 4;
             // 
             // dgvMatchList
@@ -80,9 +80,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvMatchList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvMatchList.Location = new System.Drawing.Point(12, 323);
+            this.dgvMatchList.Location = new System.Drawing.Point(12, 341);
             this.dgvMatchList.Name = "dgvMatchList";
-            this.dgvMatchList.Size = new System.Drawing.Size(1209, 242);
+            this.dgvMatchList.Size = new System.Drawing.Size(1209, 224);
             this.dgvMatchList.TabIndex = 5;
             // 
             // lblPartsToMatch
@@ -171,7 +171,7 @@
             this.Controls.Add(this.btnLoadFlisFoi);
             this.Controls.Add(this.btnLoadPartsSearchList);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Parts Data Lookup";
             ((System.ComponentModel.ISupportInitialize)(this.dgvExcelList)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMatchList)).EndInit();
             this.ResumeLayout(false);

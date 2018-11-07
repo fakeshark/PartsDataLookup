@@ -383,8 +383,6 @@ namespace PartsDataLookup
             {
                 Check036 = true;
                // todo: finish this
-                TEMP1 = "No FLIS Data Found for Part, Cage: " + pn + ", " + cage;
-                nonMatches++;
             }
 
             string CAGE = string.Empty;
@@ -423,6 +421,16 @@ namespace PartsDataLookup
                 UI = pplFrom036[13];
                 UIPRICE = pplFrom036[14];
                 QUP = pplFrom036[15];
+                if ((CAGE + PN) == "")
+                {
+                    TEMP1 = "No FLIS or .036 data found for Part, Cage: " + pn + ", " + cage;
+                    nonMatches++;
+                }
+                else
+                {
+                    TEMP1 = "Data from .036 file found for Part, Cage: " + pn + ", " + cage + ".";
+                    exactMatches++;
+                }
             }
             else
             {
@@ -736,27 +744,7 @@ namespace PartsDataLookup
 
         private string[] GetPPLDataFrom036(string pn, string cage)
         {
-            string[] pplFrom036 = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
-
-            //0 CAGE = pplFrom036[0];                   01A, 13, 5
-            //1 PN = pplFrom036[1];                        01A, 18, 26
-            //2 PROVNOM = pplFrom036[2];          01K, 23, 53
-            //3 REMARKS = pplFrom036[3];            01H, 32, 44
-            //4 RNCC = pplFrom036[4];                   01A, 50, 1
-            //5 RNVC = pplFrom036[5];                   01A, 51, 1
-            //6 DAC = pplFrom036[6];                     01A, 52, 1
-            //7 FSC = pplFrom036[7];                      01B, 15, 4
-            //8 NIIN = pplFrom036[8];                     01B, 19, 9
-            //9 NAME = pplFrom036[9];                  01A, 55, 19
-            //10 DMIL = pplFrom036[10];               01B, 70, 1
-            //11 INC = pplFrom036[11];                  
-            //12 SL = pplFrom036[12];                    01A, 74, 1
-            //13 UI = pplFrom036[13];
-            //14 UIPRICE = pplFrom036[14];
-            //15 QUP = pplFrom036[15];
-
-
-
+            string[] pplFrom036 = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
             List<string[]> MatchingParts = new List<string[]>() { };
 
             foreach (string[] part in all036Parts)
@@ -765,7 +753,7 @@ namespace PartsDataLookup
                 {
                     if (GetLineType(part[i]) == "01A")
                     {
-                        if (part[i].Substring(18, 26).Trim() == pn)
+                        if (part[i].Substring(18, 26).Trim() == pn && part[i].Substring(13, 5).Trim() == cage)
                         {
                             if (!MatchingParts.Contains(part))
                             {
@@ -776,6 +764,46 @@ namespace PartsDataLookup
                 }
             }
 
+            foreach (string[] partArray in MatchingParts)
+            {
+                for (int i = 0; i < partArray.Length; i++)
+                {
+                    //11 INC = pplFrom036[11];                  ???
+
+                    if (GetLineType(partArray[i]) == "01A")
+                    {
+                        pplFrom036[0] = partArray[i].Substring(13, 5).Trim(); //Cage
+                        pplFrom036[1] = partArray[i].Substring(18, 26).Trim(); //Pn
+                        pplFrom036[4] = partArray[i].Substring(50, 1).Trim(); //Rncc
+                        pplFrom036[5] = partArray[i].Substring(51, 1).Trim(); //Rnvc
+                        pplFrom036[6] = partArray[i].Substring(52, 1).Trim(); //Dac
+                        pplFrom036[9] = partArray[i].Substring(55, 19).Trim(); //Name
+                        pplFrom036[12] = partArray[i].Substring(74, 1).Trim(); //Sl
+                    }
+                    else if (GetLineType(partArray[i]) == "01B")
+                    {
+                        pplFrom036[7] = partArray[i].Substring(15, 4).Trim(); //Fsc
+                        pplFrom036[8] = partArray[i].Substring(19, 9).Trim(); //Niin
+                        pplFrom036[10] = partArray[i].Substring(70, 1).Trim(); //Dmil
+                        pplFrom036[13] = partArray[i].Substring(44, 2).Trim(); //Ui
+                        pplFrom036[14] = partArray[i].Substring(46, 10).Trim(); //Uiprice
+                        pplFrom036[15] = partArray[i].Substring(61, 3).Trim(); //Qup
+                    }
+                    else if (GetLineType(partArray[i]) == "01K")
+                    {
+                        pplFrom036[2] = partArray[i].Substring(23, 53).Trim(); //Provnom
+                    }
+                    else if (GetLineType(partArray[i]) == "01H")
+                    {
+                        pplFrom036[3] = partArray[i].Substring(32, 44).Trim(); //Remarks
+                    }                    
+                }
+            }
+            //if (pplFrom036[1] != "")
+            //{
+            //    pplFrom036[3] += " *data derived from .036 file."; //Remarks
+            //}
+            // todo: handle multile part matches
             return pplFrom036;
         }
 
