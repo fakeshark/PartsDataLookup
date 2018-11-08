@@ -47,7 +47,7 @@ namespace PartsDataLookup
         public void LoadSearchList()
         {
             OpenFileDialog loadNSNList = new OpenFileDialog()
-            {
+            {                
                 Filter = "Excel Spread Sheets|*.xlsx|Text Files|*.txt|All Files|*.*",
                 Title = "Select an NSN List File",
                 Multiselect = false
@@ -57,7 +57,7 @@ namespace PartsDataLookup
             {
                 string fileExtension = Path.GetExtension(loadNSNList.FileName);
 
-                //Todo: add handling for a text file list
+                // Todo: Allow for future compatibility with text file list. Currently only excel is handled
                 switch (fileExtension)
                 {
                     case ".xlsx":
@@ -81,8 +81,10 @@ namespace PartsDataLookup
 
         public void ExcelListOpen(OpenFileDialog loadNSNList)
         {
+
             string filePath = loadNSNList.FileName;
 
+            //Read in data from excel file
             IExcelDataReader excelReader;
             FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read);
 
@@ -104,12 +106,15 @@ namespace PartsDataLookup
                 }
             });
 
+            // Add data from excel into the datagridview component
             dgvExcelList.DataSource = result.Tables[0];
             dgvExcelList.Update();
 
+            // Get row and column count
             string columns = result.Tables[0].Columns.Count.ToString();
             string rows = result.Tables[0].Rows.Count.ToString();
 
+            // initialize lists of all the columns in the excel file for use in matching parts
             List<string> IndcList = new List<string>() { };
             List<string> cageCodeList = new List<string>() { };
             List<string> partNumsList = new List<string>() { };
@@ -123,10 +128,12 @@ namespace PartsDataLookup
 
             int rowCounter = 0;
 
+            // populate lists with data from the excel file
             foreach (DataGridViewRow listRow in dgvExcelList.Rows)
             {
                 rowCounter++;
-                // only add part numbers that actually contain values
+                // only add values to lists if the part number contains a value.
+                // Without PN, there's no way to match part to FLIS/036
                 if (listRow.Cells[4].Value != null)
                 {
                     if (listRow.Cells[4].Value.ToString().Trim() != "")
@@ -156,8 +163,7 @@ namespace PartsDataLookup
             ProvNomArray = provNomList.ToArray();
             NotesArray = notesList.ToArray();
 
-            //PartNumsArray = partNumsList.Distinct().ToArray();
-
+            // output message about part list summary
             lblPartsToMatch.Text = rowCounter + " rows loaded and " + PartNumsArray.Count() + " usable parts identified.";
             btnLoadFlisFoi.Enabled = true;
             btnLoad036.Enabled = true;
@@ -176,6 +182,8 @@ namespace PartsDataLookup
         {
             OpenFileDialog loadFlisTextFile = new OpenFileDialog();
 
+            // FLIS list (flisfoi.txt) is a ~4Gb text file, updated and available from:
+            // http://www.dla.mil/HQ/InformationOperations/LogisticsInformationServices/FOIAReading.aspx
             loadFlisTextFile.Filter = "Text Files|*.txt";
             loadFlisTextFile.Title = "Select a FLIS Packaging Data File";
             IEnumerable<string> fileData;
@@ -183,13 +191,16 @@ namespace PartsDataLookup
             if (loadFlisTextFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string flisPath = loadFlisTextFile.FileName;
+                // use File.RaedLines because the FLIS file is too large to do file.readALLlines
                 fileData = File.ReadLines(flisPath);
 
                 List<string> TempMatchPart = new List<string>() { };
                 bool partFound = false;
 
+                // each part record starts with an "01", so that's the delimiter we look for
                 foreach (string item in fileData)
                 {
+                    // 'partfound' is only false before the very first part/"01" line is discovered
                     if (partFound == false)
                     {
                         // if '01' line found, add to tempMatchPart list and partFound becomes true
@@ -255,9 +266,11 @@ namespace PartsDataLookup
 
         private void MatchRecords_Click(object sender, EventArgs e)
         {
+            // initialize the header row text
             string[] pplHeaderRow = new string[] {"INDEX",  "PCCN", "PLISN", "INDC", "CAGE", "PN", "RNCC", "RNVC", "DAC", "PPSL", "EC", "NAME", "SL", "SLAC", "COG", "MCC", "FSC", "NIIN", "NSNSUFF", "UM", "UM PRICE", "UI", "UI PRICE", "CONV", "QUP", "SMR", "DMIL", "PLT", "HCI", "PSPC", "PMIC", "ADPEC", "NHA", "ORR", "QPA", "QPE", "MRRI", "MRRII", "MRR MOD", "TQR", "SAPLISN", "PRPLISN", "MAOT", "MAC", "NRTS", "UOC", "REFDES", "RDOC", "RDC", "SMCC", "PLCC", "SMIC", "AIC", "AIC QTY", "MRU", "RMSS", "RISS", "RTLL QTY", "RSR", "O-MTD", "F-MTD", "H-MTD", "SRA-MTD", "D-MTD", "CED-MTD", "CAD-MTD", "O-RCT", "F-RCT", "H-RCT", "SRA-RCT", "D-RCT", "CON-RCT", "O-RTD", "F-RTD", "H-RTD", "SRA-RTD", "D-RTD", "DOP1", "DOP2", "CTIC", "AMC", "AMSC", "IMC", "RIP", "CHANGE AUTHORITY1", "IC", "SN FROM", "SN TO", "TIC", "R/S PLISN", "QTY SHIPPED", "QTY PROCURED", "DCN UOC", "PRORATED ELIN", "PRORATED QTY", "LCN", "ALT LCN", "REMARKS", "TM CODE", "FIG NUM", "ITEM NUM", "TM CHG", "TM IND", "QTY FIG", "WUC/TM FGC", "BASIS OF ISSUE1", "BASIS OF ISSUE2", "CC", "INC", "LRU", "PROV NOM", "ALTCAGE1", "ALTPN1", "ALTRNCC1", "ALTRNVC1", "ALTDAC1", "ALTPPSL1", "ALTCAGE2", "ALTPN2", "ALTRNCC2", "ALTRNVC2", "ALTDAC2", "ALTPPSL2", "ALTCAGE3", "ALTPN3", "ALTRNCC3", "ALTRNVC3", "ALTDAC3", "ALTPPSL3", "ALTCAGE4", "ALTPN4", "ALTRNCC4", "ALTRNVC4", "ALTDAC4", "ALTPPSL4", "ALTCAGE5", "ALTPN5", "ALTRNCC5", "ALTRNVC5", "ALTDAC5", "ALTPPSL5", "ALTCAGE6", "ALTPN6", "ALTRNCC6", "ALTRNVC6", "ALTDAC6", "ALTPPSL6", "MATERIAL1", "MATERIAL2", "MATERIAL3", "MATERIAL4", "RBD", "SUPP NOMEN 1", "AEL-A", "AEL-B", "AEL-C", "AEL-D", "AEL-E", "AEL-F", "AEL-G", "AEL-H", "SUPP NOMEN 2", "AFC2", "AFC QTY2", "ANC2", "AOC2", "AOC QTY2", "LLTIL1", "PPL1", "SFPPL1", "CBIL1", "RIL1", "ISIL1", "PCL1", "TTEL1", "SCPL1", "DCN1", "ARF", "LLTIL2", "PPL2", "SFPPL2", "CBIL2", "RIL2", "ISIL2", "PCL2", "TTEL2", "SCPL2", "DCN2", "ACC CODE", "ALT NIIN REL", "ALT NIIN", "ALT NIIN REL2", "ALT NIIN2", "REFDES2", "RDOC2", "CHANGE AUTHORITY2", "IC2", "SN FROM2", "SN TO2", "TIC2", "R/S PLISN2", "QTY SHIPPED2", "QTY PROCURED2", "DCN UOC2", "PRORATED ELIN2", "PRORATED QTY2", "LCN2", "ALT LCN2", "LENGTH", "WIDTH", "HEIGHT", "WEIGHT", "temp1" };
             List<string[]> pplDataRow = new List<string[]>() { };
             
+            // Make PPL formatted data row and then add it to the list for every part number
             for (int i = 0; i < PartNumsArray.Length; i++)
             {
                 pplDataRow.Add(MakePplRow(CageCodeArray[i], PartNumsArray[i], NamesArray[i], i));
@@ -283,7 +296,7 @@ namespace PartsDataLookup
 
         private string[] MakePplRow(string cage, string pn, string name, int pnIndex)
         {
-            string[] pplColumns = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", " ", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
+            string[] pplColumns = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
             ouptutIndex++;
             List<string[]> matchingParts = new List<string[]>() { };
             string line01 = string.Empty;
@@ -383,7 +396,6 @@ namespace PartsDataLookup
             else if (matchingParts.Count == 0)
             {
                 Check036 = true;
-               // todo: finish this
             }
 
             string CAGE = string.Empty;
@@ -406,6 +418,7 @@ namespace PartsDataLookup
             if (Check036)
             {
                 string[] pplFrom036 = GetPPLDataFrom036(pn, cage);
+
                 CAGE = pplFrom036[0];
                 PN = pplFrom036[1];
                 PROVNOM = pplFrom036[2];
@@ -422,9 +435,10 @@ namespace PartsDataLookup
                 UI = pplFrom036[13];
                 UIPRICE = pplFrom036[14];
                 QUP = pplFrom036[15];
+
                 if ((CAGE + PN) == "")
                 {
-                    TEMP1 = "No FLIS or .036 data found for Part, Cage: " + pn + ", " + cage;
+                    TEMP1 = "No FLIS or .036 data found for Part, Cage: " + pn + ", " + cage + ".";
                     nonMatches++;
                 }
                 else
@@ -446,7 +460,7 @@ namespace PartsDataLookup
                     PN = best03Line.Substring(15, 31).Trim();
                     if (PN != pn)
                     {
-                        REMARKS = "PN \"" + PN + "\" has been updated, the original PN was: \"" + pn + "\"";
+                        REMARKS = "PN \"" + PN + "\" has been updated, the original PN was: \"" + pn + "\".";
                     }
                 }
                 
@@ -843,7 +857,6 @@ namespace PartsDataLookup
                     else
                     {
                         unsortedParts = ReturnBestAgencyCode(unsortedParts);
-
                     }
                 }
             }
