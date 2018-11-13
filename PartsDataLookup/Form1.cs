@@ -409,6 +409,9 @@ namespace PartsDataLookup
             string NIIN = string.Empty;
             string NAME = string.Empty;
             string DMIL = string.Empty;
+            string MRRI = string.Empty;
+            string MRRII = string.Empty;
+            string MRRMOD = string.Empty;
             string INC = string.Empty;
             string SL = string.Empty;
             string UI = string.Empty;
@@ -435,6 +438,9 @@ namespace PartsDataLookup
                 UI = pplFrom036[13];
                 UIPRICE = pplFrom036[14];
                 QUP = pplFrom036[15];
+                MRRI = pplFrom036[16];
+                MRRII = pplFrom036[17];
+                MRRMOD = pplFrom036[18];
 
                 if ((CAGE + PN) == "")
                 {
@@ -571,9 +577,9 @@ namespace PartsDataLookup
             pplColumns[33] = ""; //ORR
             pplColumns[34] = ""; //QPA
             pplColumns[35] = ""; //QPE
-            pplColumns[36] = ""; //MRRI
-            pplColumns[37] = ""; //MRRII
-            pplColumns[38] = ""; //MRR MOD
+            pplColumns[36] = MRRI;              //MRRI
+            pplColumns[37] = MRRII;             //MRRII
+            pplColumns[38] = MRRMOD;      //MRR MOD
             pplColumns[39] = ""; //TQR
             pplColumns[40] = ""; //SAPLISN
             pplColumns[41] = ""; //PRPLISN
@@ -759,7 +765,7 @@ namespace PartsDataLookup
 
         private string[] GetPPLDataFrom036(string pn, string cage)
         {
-            string[] pplFrom036 = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""};
+            string[] pplFrom036 = new string[] { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" };
             List<string[]> MatchingParts = new List<string[]>() { };
 
             foreach (string[] part in all036Parts)
@@ -804,6 +810,15 @@ namespace PartsDataLookup
                         pplFrom036[14] = partArray[i].Substring(46, 10).Trim(); //Uiprice
                         pplFrom036[15] = partArray[i].Substring(61, 3).Trim(); //Qup
                     }
+                    else if (GetLineType(partArray[i]) == "01C")
+                    {
+                        if (partArray[i].Length >= 53)
+                        {
+                            pplFrom036[16] = partArray[i].Substring(30, 8).Trim(); //Mrri
+                            pplFrom036[17] = partArray[i].Substring(38, 8).Trim(); //Mrrii
+                            pplFrom036[18] = partArray[i].Substring(46, 7).Trim(); //Mrr mod
+                        }
+                    }
                     else if (GetLineType(partArray[i]) == "01K")
                     {
                         pplFrom036[2] = partArray[i].Substring(23, 53).Trim(); //Provnom
@@ -818,10 +833,7 @@ namespace PartsDataLookup
                     break;
                 }
             }
-            //if (pplFrom036[1] != "")
-            //{
-            //    pplFrom036[3] += " *data derived from .036 file."; //Remarks
-            //}
+
             // todo: handle multile part matches
             return pplFrom036;
         }
@@ -866,6 +878,7 @@ namespace PartsDataLookup
 
         private List<string[]> ReturnBestAgencyCode(List<string[]> unsortedParts)
         {
+            // Make lists for all code possibilities
             List<string[]> bestAgencyCode = new List<string[]>() { };
             List<string[]> AgencyCodeDA = new List<string[]>() { };
             List<string[]> AgencyCodeDS = new List<string[]>() { };
@@ -873,6 +886,7 @@ namespace PartsDataLookup
             List<string[]> AgencyCodeDN = new List<string[]>() { };
             List<string[]> AgencyCodeDM = new List<string[]>() { };
 
+            // add the array to the appropriate list
             foreach (string[] arr in unsortedParts)
             {
                 for (int i = 0; i < arr.Length; i++)
@@ -915,6 +929,7 @@ namespace PartsDataLookup
                 }
             }
 
+            // Now that arrays are sorted, look for the best and return
             if (AgencyCodeDA.Count != 0)
             {
                 bestAgencyCode = AgencyCodeDA;
@@ -944,6 +959,7 @@ namespace PartsDataLookup
 
         private List<string[]> ReturnBestRnvcRncc(List<string[]> unsortedParts)
         {
+            // Make lists for all code combination possibilities that are usable
             List<string[]> bestRnccRnvc = new List<string[]>() { };
             List<string[]> rnccRnvc22 = new List<string[]>() { };
             List<string[]> rnccRnvc32 = new List<string[]>() { };
@@ -953,6 +969,7 @@ namespace PartsDataLookup
             List<string[]> rnccRnvc58 = new List<string[]>() { };
             List<string[]> rnccRnvc82 = new List<string[]>() { };
 
+            // add the array to the appropriate list
             foreach (string[] arr in unsortedParts)
             {
                 for (int i = 0; i < arr.Length; i++)
@@ -1002,6 +1019,7 @@ namespace PartsDataLookup
                 }
             }
 
+            // Now that arrays are sorted, look for the best and return
             if (rnccRnvc22.Count != 0)
             {
                 bestRnccRnvc = rnccRnvc22;
